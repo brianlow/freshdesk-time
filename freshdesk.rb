@@ -2,6 +2,12 @@ class Freshdesk
   def initialize(api_key, agent_id)
     @api_key = api_key
     @agent_id = agent_id
+    @conn = Faraday.new(url: 'https://metacomet.freshdesk.com') do |c|
+      c.response :raise_error
+      c.basic_auth(@api_key, 'x')
+      c.headers['content-type'] = 'application/json'
+      c.adapter :net_http
+    end
   end
 
   #
@@ -15,13 +21,7 @@ class Freshdesk
   #   note            (string)
   #
   def list_time_entries
-    conn = Faraday.new(url: 'https://metacomet.freshdesk.com') do |c|
-      c.response :raise_error
-      c.basic_auth(@api_key, 'x')
-      c.adapter :net_http
-    end
-
-    results = JSON.parse(conn.get('/api/v2/time_entries', { agent_id: @agent_id }).body)
+    results = JSON.parse(@conn.get('/api/v2/time_entries', { agent_id: @agent_id }).body)
 
     hue_start = 200
     hue_incr = 50
@@ -32,7 +32,7 @@ class Freshdesk
       results
       .map { |res| res['ticket_id'] }
       .uniq
-      .map { |ticket_id| JSON.parse(conn.get("/api/v2/tickets/#{ticket_id}").body) }
+      .map { |ticket_id| JSON.parse(@conn.get("/api/v2/tickets/#{ticket_id}").body) }
       .map.with_index do |res, i|
         [
             res['id'],
@@ -62,6 +62,18 @@ class Freshdesk
     end
   end
 
+  def create_time_entry(entry)
+    body = {
+      time_spent: format_duration(entry.duration),
+      executed_at: entry.date.iso8601,
+      agent_id: @agent_id,
+      note: entry.note
+    }
+    @conn.post("/api/v2/tickets/#{entry.ticket_id}/time_entries") do |req|
+      req.body = body.to_json
+    end
+  end
+
   def tickets_by_id
     @tickets_by_id
   end
@@ -76,5 +88,9 @@ class Freshdesk
 
   def parse_duration(duration)
     (Time.parse("#{duration}:00").seconds_since_midnight / 60).floor.to_i
+  end
+
+  def format_duration(minutes)
+    Time.at(minutes * 60).utc.strftime("%H:%M")
   end
 end

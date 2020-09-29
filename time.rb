@@ -53,7 +53,7 @@ def print_entries(entries)
 end
 
 api_key = ENV['APIKEY']
-agent_id = ENV['AGENTID']
+agent_id = ENV['AGENTID'].to_i
 
 freshdesk = Freshdesk.new(api_key, agent_id)
 actual = freshdesk.list_time_entries
@@ -98,8 +98,15 @@ def key(entry)
   [entry.date, entry.ticket_id, entry.duration, entry.note]
 end
 
+# TODO: will not delete a duplicate
 diff = missing(actual, expected, :delete) + missing(expected, actual, :create) + same(actual, expected, :nothing)
 diff = diff.sort_by{ |entry| "#{entry.date.iso8601}-#{entry.ticket_subject}" }.reverse
 
 pp diff
 print_entries(diff)
+
+# diff.each do |entry|
+#   if entry.operation == :create
+#     freshdesk.create_time_entry(entry)
+#   end
+# end
