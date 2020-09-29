@@ -14,8 +14,8 @@ class TimingCsv
         OpenStruct.new(
           {
             date: Date.parse(row['Day']),
-            project: row['Project'],
-            task: parse_task(row['Task Title'].presence),
+            project: row['Project']&.strip,
+            task: parse_task(row['Task Title'].presence&.strip),
             duration: parse_duration(row['Duration'])
           }
         )

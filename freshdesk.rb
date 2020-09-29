@@ -28,27 +28,50 @@ class Freshdesk
     sat = 65
     lightness = 50
 
-    tickets =
+    @tickets_by_id =
       results
       .map { |res| res['ticket_id'] }
       .uniq
       .map { |ticket_id| JSON.parse(conn.get("/api/v2/tickets/#{ticket_id}").body) }
-      .map.with_index { |res, i| [res['id'], { subject: res['subject'], color: Color::HSL.new((hue_start + (i * hue_incr)) % 360, sat, lightness).to_rgb.html} ] }
+      .map.with_index do |res, i|
+        [
+            res['id'],
+            OpenStruct.new(
+              {
+                id: res['id'],
+                subject: res['subject'],
+                color: Color::HSL.new((hue_start + (i * hue_incr)) % 360, sat, lightness).to_rgb.html
+              }
+            )
+        ]
+      end
       .to_h
 
     results.map do |res|
-      ticket = tickets[res['ticket_id']]
+      ticket = @tickets_by_id[res['ticket_id']]
       OpenStruct.new(
         {
           date: Date.parse(res['executed_at']),
           duration: parse_duration(res['time_spent']),
           ticket_id: res['ticket_id'],
-          ticket_subject: ticket[:subject],
-          ticket_color: ticket[:color],
+          ticket_subject: ticket.subject,
+          ticket_color: ticket.color,
           note: res['note']
         }
       )
     end
+  end
+
+  def tickets_by_id
+    @tickets_by_id
+  end
+
+  def tickets_by_subject
+    @tickets_by_subject =
+      tickets_by_id
+      .values
+      .map { |ticket| [ticket.subject, ticket] }
+      .to_h
   end
 
   def parse_duration(duration)
