@@ -51,6 +51,7 @@ class Freshdesk
       ticket = @tickets_by_id[res['ticket_id']]
       OpenStruct.new(
         {
+          id: res['id'],
           date: Date.parse(res['executed_at']),
           duration: parse_duration(res['time_spent']),
           ticket_id: res['ticket_id'],
@@ -72,6 +73,10 @@ class Freshdesk
     @conn.post("/api/v2/tickets/#{entry.ticket_id}/time_entries") do |req|
       req.body = body.to_json
     end
+  end
+
+  def delete_time_entry(entry)
+    @conn.delete("/api/v2/time_entries/#{entry.id}")
   end
 
   def tickets_by_id
