@@ -80,26 +80,24 @@ end
 
 # TODO: will not delete a duplicate
 diff = missing(actual, expected, :delete) + missing(expected, actual, :create) + same(actual, expected, :nothing)
-diff = diff.sort_by{ |entry| "#{entry.date.iso8601}-#{entry.ticket_subject}" }.reverse
+diff = diff.sort_by { |entry| "#{entry.date.iso8601}-#{entry.ticket_subject}-#{entry.operation == :delete ? '1' : '0'}" }.reverse
 
 puts "Agent #{agent_id}"
 puts "Period #{date_range}"
 puts ''
 
-puts 'ACTUAL'
-Printer.new.print_entries(actual)
-
-puts 'EXPECTED'
-Printer.new.print_entries(expected)
-
-puts 'DIFF'
 Printer.new.print_entries(diff)
 
-# diff.each do |entry|
-#   if entry.operation == :create
-#     freshdesk.create_time_entry(entry)
-#   end
-#   if entry.operation == :delete
-#     freshdesk.delete_time_entry(entry)
-#   end
-# end
+if ENV['SAVE']
+  puts ''
+  diff.each do |entry|
+    if entry.operation == :create
+      puts "Creating #{entry.date} for #{entry.ticket_subject}"
+      freshdesk.create_time_entry(entry)
+    end
+    if entry.operation == :delete
+      puts "Deleting #{entry.date} for #{entry.ticket_subject}"
+      freshdesk.delete_time_entry(entry)
+    end
+  end
+end

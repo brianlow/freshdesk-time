@@ -2,7 +2,7 @@ class Printer
   def print_entries(entries)
     rows = entries.map do |entry|
       [
-        entry[:operation]&.to_s,
+        format_operation(entry[:operation]),
         entry.date.strftime('%a, %b %-d %Y'),
         Rainbow(format_duration(entry.duration)).white,
         Rainbow(entry.ticket_subject).color(entry.ticket_color),
@@ -26,4 +26,9 @@ class Printer
     s
   end
 
+  def format_operation(op)
+    return Rainbow("+").green if op == :create
+    return Rainbow("-").red if op == :delete
+    nil
+  end
 end
