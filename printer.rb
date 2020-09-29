@@ -15,7 +15,7 @@ class Printer
     table = TTY::Table.new headers, [separators] + rows
 
     puts ''
-    puts table.render(:basic, padding: [0, 2, 0, 0])
+    puts table.render(:basic, padding: [0, 2, 0, 0], resize: true)
     puts ''
   end
 
