@@ -7,52 +7,49 @@ gemfile do
   gem 'pastel'
   gem 'rainbow'
   gem 'color'
+  gem 'activesupport'
 end
 
 require 'json'
 require 'date'
+require 'time'
 require 'pastel'
 require 'rainbow'
 require 'color'
+require 'csv'
+require 'active_support/all'
+require_relative 'freshdesk'
+require_relative 'timing_csv'
+
+def format_duration(minutes)
+  s = Time.at(minutes * 60).utc.strftime("%H:%M")
+  return "  #{s[2..]}" if s.starts_with?("00")
+  return " #{s[1..]}" if s.starts_with?("0")
+  s
+end
 
 api_key = ENV['APIKEY']
 agent_id = ENV['AGENTID']
 
-conn = Faraday.new(url: 'https://metacomet.freshdesk.com') do |c|
-  c.response :raise_error
-  c.basic_auth(api_key, 'x')
-  c.adapter :net_http
-end
+freshdesk = Freshdesk.new(api_key, agent_id)
+entries = freshdesk.list_time_entries
 
-results = JSON.parse(conn.get('/api/v2/time_entries', { agent_id: agent_id }).body)
-
-hue_start = 200
-hue_incr = 50
-sat = 65
-lightness = 50
-
-tickets =
-  results
-  .map { |res| res['ticket_id'] }
-  .uniq
-  .map { |ticket_id| JSON.parse(conn.get("/api/v2/tickets/#{ticket_id}").body) }
-  .map.with_index { |res, i| [res['id'], { subject: res['subject'], color: Color::HSL.new((hue_start + (i * hue_incr)) % 360, sat, lightness).to_rgb.html} ] }
-  .to_h
-
-entries = results.map do |res|
-  ticket = tickets[res['ticket_id']]
+rows = entries.map do |entry|
   [
-    Date.parse(res['executed_at']).strftime('%a, %b %-d %Y'),
-    Rainbow(res['time_spent']).white,
-    Rainbow(ticket[:subject]).color(ticket[:color]),
-    res['note']
+    entry.date.strftime('%a, %b %-d %Y'),
+    Rainbow(format_duration(entry.duration)).white,
+    Rainbow(entry.ticket_subject).color(entry.ticket_color),
+    entry.note
   ]
 end
 
-headers = ['Date', 'Time', 'Project', 'Note']
+headers = ['Date', 'Duration', 'Ticket', 'Note']
 separators = headers.map { |h| '─' * h.length }
-table = TTY::Table.new headers, [separators] + entries
+table = TTY::Table.new headers, [separators] + rows
 
 puts ''
 puts table.render(:basic, padding: [0, 2, 0, 0])
 puts ''
+
+filename = '/Users/brianmeta/Downloads/All Activities.csv'
+puts TimingCsv.new.parse(filename)
