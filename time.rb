@@ -27,11 +27,9 @@ require_relative 'printer'
 
 api_key = ENV['APIKEY']
 agent_id = ENV['AGENTID'].to_i
+filename = ARGV[0]
 
 freshdesk = Freshdesk.new(api_key, agent_id)
-filename = '/Users/brianmeta/Downloads/All Activities.csv'
-
-
 actual = freshdesk.list_time_entries
 
 expected = TimingCsv.new.parse(filename)
