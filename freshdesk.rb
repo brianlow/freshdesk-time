@@ -52,7 +52,7 @@ class Freshdesk
       OpenStruct.new(
         {
           id: res['id'],
-          date: Date.parse(res['executed_at']),
+          date: Time.parse(res['executed_at']).in_time_zone("America/Edmonton").to_date,
           duration: parse_duration(res['time_spent']),
           ticket_id: res['ticket_id'],
           ticket_subject: ticket.subject,
@@ -66,7 +66,7 @@ class Freshdesk
   def create_time_entry(entry)
     body = {
       time_spent: format_duration(entry.duration),
-      executed_at: entry.date.iso8601,
+      executed_at: (entry.date.to_datetime.utc + 8.hours).iso8601,
       agent_id: @agent_id,
       note: entry.note
     }
