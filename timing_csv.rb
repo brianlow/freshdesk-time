@@ -48,7 +48,7 @@ class TimingCsv
   end
 
   def round_down_to_5min(duration)
-    ((duration / 5.0).floor * 5).to_i
+    ((duration / 5.0).round(half: :even) * 5).to_i
   end
 
   def project_to_ticket(project)
