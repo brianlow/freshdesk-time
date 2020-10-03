@@ -28,3 +28,6 @@ Setup two environment variables
 
 ### Gotcha/Limitations
 * Can only handle Projects that you already have at least one time entry on
+  (need to figure out how to query projects by name)
+* Won't delete duplicates from Freshdesk
+  (need to improve diff algo)

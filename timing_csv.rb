@@ -25,7 +25,7 @@ class TimingCsv
         OpenStruct.new(
           {
             date: key[0],
-            duration: round_down_to_5min(rows.map(&:duration).reduce(0, :+)),
+            duration: round_down_to_5min(rows.map(&:duration).sum),
             ticket_subject: key[1],
             note: rows.map(&:task).compact.join(', ')
           }

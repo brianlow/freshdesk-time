@@ -14,8 +14,8 @@ class Timesheet
       end
     end
 
-    total = @entries.map(&:duration).reduce(0, :+)
-    puts "Total;#{total/60.0}"
+    total = @entries.map(&:duration).sum
+    puts "Total;#{total / 60.0}"
   end
 
   private
@@ -27,7 +27,7 @@ class Timesheet
         OpenStruct.new(
           {
             date: key,
-            duration: rows.map(&:duration).reduce(0, :+),
+            duration: rows.map(&:duration).sum,
             note: rows.map(&:note).compact.join(', ')
           }
         )
