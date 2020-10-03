@@ -23,6 +23,7 @@ require 'pry'
 require 'active_support/all'
 require_relative 'freshdesk'
 require_relative 'timing_csv'
+require_relative 'timesheet'
 require_relative 'printer'
 
 api_key = ENV['APIKEY']
@@ -85,6 +86,8 @@ puts "Period #{date_range}"
 puts ''
 
 Printer.new.print_entries(diff)
+
+Timesheet.new(actual).print
 
 if ENV['SAVE']
   puts ''
