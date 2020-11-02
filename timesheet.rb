@@ -8,7 +8,7 @@ class Timesheet
     @date_range.each do |date|
       entry = @entries.find { |e| e.date == date }
       if entry
-        puts "#{entry.date.iso8601};#{entry.duration / 60.0};#{entry.note}"
+        puts "#{entry.date.iso8601};#{entry.duration / (60.0 * 24)};#{entry.note}"
       else
         puts "#{date.iso8601};;"
       end
