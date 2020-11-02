@@ -87,7 +87,9 @@ puts ''
 
 Printer.new.print_entries(diff)
 
-Timesheet.new(expected).print
+if ENV['TIMESHEET']
+  Timesheet.new(expected).print
+end
 
 if ENV['SAVE']
   puts ''

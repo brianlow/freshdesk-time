@@ -22,9 +22,11 @@ Setup two environment variables
     ```
 3. To save to Freshdesk
     ```
-    SAVE=tue ruby time.rb mytime.csv
+    SAVE=true ruby time.rb mytime.csv
     ```
 
+To print out a semi-colon-separated version of the timeshet (suitable for copy-paste
+into Google Sheets) run with `TIMESHEET=true`
 
 ### Gotcha/Limitations
 * Can only handle Projects that you already have at least one time entry on
