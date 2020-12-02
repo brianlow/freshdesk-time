@@ -15,7 +15,7 @@ class TimingCsv
           {
             date: Date.parse(row['Day']),
             ticket_subject: project_to_ticket(row['Project']&.strip),
-            task: parse_task(row['Task Title'].presence&.strip),
+            task: parse_task(row['Title'].presence&.strip),
             duration: parse_duration(row['Duration'])
           }
         )

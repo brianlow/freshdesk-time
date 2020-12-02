@@ -9,7 +9,7 @@ Setup two environment variables
 1. Record your time in a CSV:
 
     ```
-    Day,Project,Duration,Task Title
+    Day,Project,Duration,Title
     2020-09-01,My Freshdesk Ticket Name,0:30:00,Built a cool feature
     2020-09-02,My Freshdesk Ticket Name,1:20:00,Some other feature
     ```

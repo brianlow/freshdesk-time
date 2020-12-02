@@ -6,7 +6,7 @@ class Printer
         entry.date.strftime('%a, %b %-d %Y'),
         Rainbow(format_duration(entry.duration)).white,
         Rainbow(entry.ticket_subject).color(entry.ticket_color),
-        entry.note
+        entry.note[0..50]
       ]
     end
 
