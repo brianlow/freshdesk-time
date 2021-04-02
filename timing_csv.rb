@@ -53,6 +53,7 @@ class TimingCsv
 
   def project_to_ticket(project)
     return 'Metaverse Development & QA' if project == 'Cross Collateralization'
+    return 'Metaverse Development & QA' if project == '(No Project)'
 
     project
   end
