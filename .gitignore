@@ -1,1 +1,7 @@
 .envrc
+
+# Google Cloud creds
+credentials.json
+
+# Google Cloud OAuth access token
+token.yaml
