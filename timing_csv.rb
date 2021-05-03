@@ -3,9 +3,7 @@ class TimingCsv
   # Parses a CSV from Timing.app returning an enumerable
   # of OpenStruct rows with these attributes:
   #   date            (date)
-  #   duration        (integer, in minutes)
-  #   ticket_subject  (string)
-  #   note            (string)
+  #   hours           (fractional hours)
   #
   def parse(filename)
     CSV
@@ -14,47 +12,14 @@ class TimingCsv
         OpenStruct.new(
           {
             date: Date.parse(row['Day']),
-            ticket_subject: project_to_ticket(row['Project']&.strip),
-            task: parse_task(row['Title'].presence&.strip),
-            duration: parse_duration(row['Duration'])
+            hours: parse_duration(row['Duration'])
           }
         )
       end
-      .group_by { |row| [row.date, row.ticket_subject]}
-      .map do |key, rows|
-        OpenStruct.new(
-          {
-            date: key[0],
-            duration: round_down_to_5min(rows.map(&:duration).sum),
-            ticket_subject: key[1],
-            note: rows.map(&:task).compact.join(', ')
-          }
-        )
-      end
-      .reject { |entry| entry.duration < 5 }
-      .reject { |entry| entry.ticket_subject == 'Other' }
-  end
-
-  def parse_task(task)
-    if task == '(Entries shorter than 1m each)'
-      nil
-    else
-      task
-    end
+      .reject { |entry| entry.hours < (5 / 60.0) }
   end
 
   def parse_duration(duration)
-    (Time.parse(duration).seconds_since_midnight / 60).floor.to_i
-  end
-
-  def round_down_to_5min(duration)
-    ((duration / 5.0).round(half: :even) * 5).to_i
-  end
-
-  def project_to_ticket(project)
-    return 'Metaverse Development & QA' if project == 'Cross Collateralization'
-    return 'Metaverse Development & QA' if project == '(No Project)'
-
-    project
+    Float(duration)
   end
 end
