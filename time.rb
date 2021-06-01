@@ -7,6 +7,7 @@ gemfile do
   gem 'activesupport'
   gem 'color'
   gem 'faraday'
+  gem 'faraday_middleware'
   gem 'pastel'
   gem 'pry'
   gem 'rainbow'
@@ -19,6 +20,8 @@ require 'json'
 require 'date'
 require 'time'
 require 'pastel'
+require 'faraday'
+require 'faraday_middleware'
 require 'rainbow'
 require 'color'
 require 'csv'
@@ -42,6 +45,7 @@ puts ''
 
 spreadsheet_id = '17Z7EGb2AFZiMRL2JC0abEdrCY1klXod2tWWTM98q3j8' # Temp Spreadsheet
 CSV_FOLDER = '/Users/brianshift/Downloads/time'
+PDF_FOLDER = CSV_FOLDER
 SQUAD_NAME = 'Trop Rock'
 month = Date.current.beginning_of_month
 
@@ -56,9 +60,9 @@ puts "Found #{csv.count} rows and #{pastel.white("#{total_hours} hours")}"
 sheet_name = month.strftime('%b %Y')
 spreadsheet = GoogleSpreadsheet.new(spreadsheet_id)
 if spreadsheet.sheet_exists?(sheet_name)
-  puts "Sheet #{pastel.green(sheet_name)} exists"
+  puts "Spreadsheet #{pastel.green(spreadsheet.title)} already has sheet #{pastel.green(sheet_name)}"
 else
-  puts "Creating sheet #{pastel.green(sheet_name)} from template"
+  puts "Creating sheet #{pastel.green(sheet_name)} in spreadsheet #{pastel.green(spreadsheet.title)}"
   spreadsheet.duplicate_sheet('Template', sheet_name)
   spreadsheet.set_cell(sheet_name, 'C3', "Period: #{sheet_name}")
 end
@@ -72,5 +76,11 @@ values =
 spreadsheet.set_cells(sheet_name, 'A6:C36', values)
 recorded_hours = spreadsheet.cell(sheet_name, 'B37')
 puts "Recorded #{pastel.white("#{recorded_hours} hours")}"
+
+pdf = "#{PDF_FOLDER}/#{month.strftime('%Y-%m')}.pdf"
+puts "Downloading PDF to #{pastel.green(pdf)}"
+spreadsheet.download_pdf(sheet_name, pdf)
+
+puts "Sheet: #{spreadsheet.link_to_sheet(sheet_name)}"
 
 puts ''

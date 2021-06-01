@@ -9,6 +9,10 @@ class GoogleSpreadsheet
     @spreadsheet_id = spreadsheet_id
   end
 
+  def title
+    spreadsheet.properties.title
+  end
+
   def sheet_exists?(sheet_name)
     spreadsheet.sheets.any? { |s| s.properties.title == sheet_name }
   end
@@ -50,6 +54,21 @@ class GoogleSpreadsheet
       "'#{sheet_name}'!#{cell}"
     )
     result.values.first.first
+  end
+
+  def link_to_sheet(sheet_name)
+    sheet = spreadsheet.sheets.find { |s| s.properties.title == sheet_name }
+    "https://docs.google.com/spreadsheets/d/#{@spreadsheet_id}/edit#gid=#{sheet.properties.sheet_id}"
+  end
+
+  def download_pdf(sheet_name, path)
+    sheet = spreadsheet.sheets.find { |s| s.properties.title == sheet_name }
+    url = "https://docs.google.com/spreadsheets/d/#{@spreadsheet_id}/export"
+    params = { gid: sheet.properties.sheet_id, 'exportFormat': 'pdf', range: 'A1:C37' }
+
+    conn = Faraday.new { |f| f.response :follow_redirects }
+    response = conn.get(url, params, { 'Authorization' => "Bearer #{service.authorization.access_token}" })
+    File.write(path, response.body)
   end
 
   private
