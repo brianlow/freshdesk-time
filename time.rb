@@ -44,6 +44,7 @@ pastel = Pastel.new
 puts ''
 
 spreadsheet_id = '17Z7EGb2AFZiMRL2JC0abEdrCY1klXod2tWWTM98q3j8' # Temp Spreadsheet
+# spreadsheet_id = '1IQjgumw91YtDu3qHTicrT2qRw4C_7opc6NaV7jb8aO0' # Real spreadsheet
 CSV_FOLDER = '/Users/brianshift/Downloads/time'
 PDF_FOLDER = CSV_FOLDER
 SQUAD_NAME = 'Trop Rock'

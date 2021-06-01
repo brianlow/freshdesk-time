@@ -13,3 +13,10 @@
 ```
 ruby time.rb
 ```
+
+### Todo
+
+- handle shorter months (delete last row, get total hours, pdf range)
+- externalize env vars
+- download_url doesn't work on newly created sheet
+- bold the month headre
