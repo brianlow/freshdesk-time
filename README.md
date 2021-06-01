@@ -2,12 +2,12 @@
 
 ### Setup
 
-* https://console.cloud.google.com -> IAM -> Service Accounts
-* Project: Ruby Timesheet
+* https://console.cloud.google.com/iam-admin/serviceaccounts?project=ruby-timesheet
+  * Google Cloud -> IAM -> Service Accounts -> Project Ruby Timesheet
 * Service: Ruby Timesheet Service
 * Keys -> Create New Key
 * Save to `service-credentials.json`
-* In particular a Google Sheet -> Share with the service account email
+* Share each Google Sheet with the service account email
 
 ### To Run
 ```
