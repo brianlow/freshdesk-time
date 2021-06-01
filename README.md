@@ -11,5 +11,5 @@
 
 ### To Run
 ```
-ruby time.rb ~/Downloads/time/? | tee /dev/stderr | pbcopy
+ruby time.rb
 ```

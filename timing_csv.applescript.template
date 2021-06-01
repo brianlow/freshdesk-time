@@ -1,0 +1,51 @@
+-- Copyright (c) 2021 Timing Software GmbH. All rights reserved.
+-- This script is licensed only to extend the functionality of Timing. Redistribution and any other uses are not allowed without prior permission from us.
+tell application "TimingHelper"
+	if not scripting support available then
+		error "Scripting support requires a Timing Expert license. Please contact support via https://timingapp.com/contact to upgrade."
+	end if
+end tell
+
+set from_date to date "==FROM_DATE=="
+set to_date to date "Friday, May 31, 2021 at 11:59:00 PM"
+-- set hours of datevar to 7
+-- set minutes of datevar to 0
+-- set seconds of datevar to 0
+
+tell application "TimingHelper"
+	set reportSettings to make report settings
+	set exportSettings to make export settings
+
+	get properties of reportSettings
+
+	tell reportSettings
+		set first grouping mode to by day
+		set second grouping mode to none
+
+		set tasks included to true
+		set task title included to true
+		set also group by task title to true
+		set task timespan included to true
+		set task notes included to false
+
+		set app usage included to true
+		set application info included to false
+		set timespan info included to false
+
+		set also group by application to false
+	end tell
+
+	tell exportSettings
+		set file format to CSV
+
+		set duration format to hours
+
+		set short entries included to false
+	end tell
+
+	save report with report settings reportSettings export settings exportSettings between from_date and to_date to "==FILENAME=="
+
+	-- these commands are required to avoid accumulating old settings (and thus leaking memory)
+	delete reportSettings
+	delete exportSettings
+end tell

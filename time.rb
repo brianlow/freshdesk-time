@@ -49,14 +49,29 @@ PDF_FOLDER = CSV_FOLDER
 SQUAD_NAME = 'Trop Rock'
 month = Date.current.beginning_of_month
 
-# Read CSV output by Timing App
+# Export
 csv_name = "#{CSV_FOLDER}/#{month.strftime('%Y-%m')}.csv"
-puts "Reading #{pastel.green(csv_name)}"
+puts "Exporting time to #{pastel.green(csv_name)}"
+script = File.read('timing_csv.applescript.template')
+script = script.sub(/==FROM_DATE==/, month.beginning_of_month.beginning_of_day.strftime('%A, %B %e, %Y at %I:%M %p'))
+script = script.sub(/==TO_DATE==/, month.end_of_month.end_of_day.strftime('%A, %B %e, %Y at %I:%M %p'))
+script = script.sub(/==FILENAME==/, csv_name)
+Tempfile.open do |f|
+  f.write(script)
+  f.flush
+  f.close
+  `osascript #{f.path}`
+  raise "osascript failed #{$?}" if $? != 0
+end
+
+# Read CSV output by Timing App
+puts 'Reading csv'
 csv = TimingCsv.new.parse(csv_name)
 hours_by_date = csv.map { |row| [row.date, round(row.hours)] }.to_h
 total_hours = csv.sum(&:hours)
 puts "Found #{csv.count} rows and #{pastel.white("#{total_hours} hours")}"
 
+# Create sheet
 sheet_name = month.strftime('%b %Y')
 spreadsheet = GoogleSpreadsheet.new(spreadsheet_id)
 if spreadsheet.sheet_exists?(sheet_name)
