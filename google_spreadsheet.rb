@@ -31,8 +31,25 @@ class GoogleSpreadsheet
       @spreadsheet_id,
       "'#{sheet_name}'!#{cell}",
       Google::Apis::SheetsV4::ValueRange.new(values: [[value]]),
-      value_input_option: 'RAW'
+      value_input_option: 'USER_ENTERED'
     )
+  end
+
+  def set_cells(sheet_name, range, values)
+    service.update_spreadsheet_value(
+      @spreadsheet_id,
+      "'#{sheet_name}'!#{range}",
+      Google::Apis::SheetsV4::ValueRange.new(values: values),
+      value_input_option: 'USER_ENTERED'
+    )
+  end
+
+  def cell(sheet_name, cell)
+    result = service.get_spreadsheet_values(
+      @spreadsheet_id,
+      "'#{sheet_name}'!#{cell}"
+    )
+    result.values.first.first
   end
 
   private

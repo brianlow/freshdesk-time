@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bundler/inline'
 
 gemfile do
@@ -35,28 +37,40 @@ def round(hours)
   (hours * 2.0).round / 2.0
 end
 
+pastel = Pastel.new
+puts ''
+
 spreadsheet_id = '17Z7EGb2AFZiMRL2JC0abEdrCY1klXod2tWWTM98q3j8' # Temp Spreadsheet
-csv_folder = '/Users/brianshift/Downloads/time'
+CSV_FOLDER = '/Users/brianshift/Downloads/time'
+SQUAD_NAME = 'Trop Rock'
+month = Date.current.beginning_of_month
 
-month = Date.new(2021, 5, 1)
-
-csv = TimingCsv.new.parse("#{csv_folder}/#{month.strftime('%Y-%m')}.csv")
+# Read CSV output by Timing App
+csv_name = "#{CSV_FOLDER}/#{month.strftime('%Y-%m')}.csv"
+puts "Reading #{pastel.green(csv_name)}"
+csv = TimingCsv.new.parse(csv_name)
 hours_by_date = csv.map { |row| [row.date, round(row.hours)] }.to_h
+total_hours = csv.sum(&:hours)
+puts "Found #{csv.count} rows and #{pastel.white("#{total_hours} hours")}"
 
 sheet_name = month.strftime('%b %Y')
 spreadsheet = GoogleSpreadsheet.new(spreadsheet_id)
-spreadsheet.duplicate_sheet('Template', sheet_name) unless spreadsheet.sheet_exists?(sheet_name)
-spreadsheet.set_cell(sheet_name, 'B6', 'Hey')
+if spreadsheet.sheet_exists?(sheet_name)
+  puts "Sheet #{pastel.green(sheet_name)} exists"
+else
+  puts "Creating sheet #{pastel.green(sheet_name)} from template"
+  spreadsheet.duplicate_sheet('Template', sheet_name)
+  spreadsheet.set_cell(sheet_name, 'C3', "Period: #{sheet_name}")
+end
 
-# https://github.com/googleapis/google-api-ruby-client/tree/master/google-api-client/generated/google/apis/sheets_v4
-# https://stackoverflow.com/questions/59231487/google-sheets-api-v4-bold-part-of-cell
-# https://developers.google.com/sheets/api/samples/formatting
+puts 'Setting cells'
+values =
+  (month..(month.end_of_month)).map do |date|
+    hours = hours_by_date[date]
+    [date.iso8601, hours || '', hours.present? ? SQUAD_NAME : '']
+  end
+spreadsheet.set_cells(sheet_name, 'A6:C36', values)
+recorded_hours = spreadsheet.cell(sheet_name, 'B37')
+puts "Recorded #{pastel.white("#{recorded_hours} hours")}"
 
-# Find sheet
-
-# entries = TimingCsv.new.parse(filename)
-
-# Timesheet.new(entries).print
-
-binding.pry
-i = 0
+puts ''
