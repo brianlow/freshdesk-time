@@ -52,18 +52,18 @@ month = (Date.current - 1.month).beginning_of_month
 
 # Export
 csv_name = "#{CSV_FOLDER}/#{month.strftime('%Y-%m')}.csv"
-puts "Exporting time to #{pastel.green(csv_name)}"
-script = File.read('timing_csv.applescript.template')
-script = script.sub(/==FROM_DATE==/, month.beginning_of_month.beginning_of_day.strftime('%A, %B %e, %Y at %I:%M %p'))
-script = script.sub(/==TO_DATE==/, month.end_of_month.end_of_day.strftime('%A, %B %e, %Y at %I:%M %p'))
-script = script.sub(/==FILENAME==/, csv_name)
-Tempfile.open do |f|
-  f.write(script)
-  f.flush
-  f.close
-  `osascript #{f.path}`
-  raise "osascript failed #{$?}" if $? != 0
-end
+# puts "Exporting time to #{pastel.green(csv_name)}"
+# script = File.read('timing_csv.applescript.template')
+# script = script.sub(/==FROM_DATE==/, month.beginning_of_month.beginning_of_day.strftime('%A, %B %e, %Y at %I:%M %p'))
+# script = script.sub(/==TO_DATE==/, month.end_of_month.end_of_day.strftime('%A, %B %e, %Y at %I:%M %p'))
+# script = script.sub(/==FILENAME==/, csv_name)
+# Tempfile.open do |f|
+#   f.write(script)
+#   f.flush
+#   f.close
+#   `osascript #{f.path}`
+#   raise "osascript failed #{$?}" if $? != 0
+# end
 
 # Read CSV output by Timing App
 puts 'Reading csv'
