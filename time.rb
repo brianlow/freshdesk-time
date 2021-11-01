@@ -47,8 +47,8 @@ spreadsheet_id = '17Z7EGb2AFZiMRL2JC0abEdrCY1klXod2tWWTM98q3j8' # Temp Spreadshe
 # spreadsheet_id = '1IQjgumw91YtDu3qHTicrT2qRw4C_7opc6NaV7jb8aO0' # Real spreadsheet
 CSV_FOLDER = '/Users/brianshift/Downloads/time'
 PDF_FOLDER = CSV_FOLDER
-SQUAD_NAME = 'Trop Rock'
-month = Date.current.beginning_of_month
+SQUAD_NAME = 'Boom Bap'
+month = (Date.current - 1.month).beginning_of_month
 
 # Export
 csv_name = "#{CSV_FOLDER}/#{month.strftime('%Y-%m')}.csv"
