@@ -28,10 +28,12 @@ require 'csv'
 require 'ostruct'
 require 'pry'
 require 'active_support/all'
+require 'google/apis/drive_v3'
 require 'google/apis/sheets_v4'
 require 'googleauth'
 require 'fileutils'
 
+require_relative 'google_drive'
 require_relative 'google_spreadsheet'
 require_relative 'timing_csv'
 require_relative 'timesheet'
@@ -43,8 +45,9 @@ end
 pastel = Pastel.new
 puts ''
 
-spreadsheet_id = '17Z7EGb2AFZiMRL2JC0abEdrCY1klXod2tWWTM98q3j8' # Temp Spreadsheet
-# spreadsheet_id = '1IQjgumw91YtDu3qHTicrT2qRw4C_7opc6NaV7jb8aO0' # Real spreadsheet
+# spreadsheet_id = '17Z7EGb2AFZiMRL2JC0abEdrCY1klXod2tWWTM98q3j8' # Temp Spreadsheet
+spreadsheet_id = '1IQjgumw91YtDu3qHTicrT2qRw4C_7opc6NaV7jb8aO0' # Real spreadsheet
+INVOICE_DRIVE_FOLDER = '1JaPYuZuDIZViHmBfvJLS6X8jS4mF-9ft'
 CSV_FOLDER = '/Users/brianshift/Downloads/time'
 PDF_FOLDER = CSV_FOLDER
 SQUAD_NAME = 'Boom Bap'
@@ -98,10 +101,18 @@ spreadsheet.set_cells(sheet_name, 'A6:C36', values)
 recorded_hours = spreadsheet.cell(sheet_name, 'B37')
 puts "Recorded #{pastel.white("#{recorded_hours} hours")}"
 
-pdf = "#{PDF_FOLDER}/#{month.strftime('%Y-%m')}.pdf"
+pdf = "#{PDF_FOLDER}/Timesheet - Shift - #{month.strftime('%Y-%m')}.pdf"
 puts "Downloading PDF to #{pastel.green(pdf)}"
 spreadsheet.download_pdf(sheet_name, pdf)
 
 puts "Sheet: #{spreadsheet.link_to_sheet(sheet_name)}"
+
+# puts "Uploading timesheet PDF drive"
+# drive = GoogleDrive.new
+# drive.upload(pdf, INVOICE_DRIVE_FOLDER, 'application/pdf')
+# This doesn't work because it seems like we can only access files previously
+# touched by rhe user we are connecting with
+# in google_drive.rb: service.list_files().to_h only returns 2 files
+# https://developers.google.com/drive/api/v3/search-files
 
 puts ''
