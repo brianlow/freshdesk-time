@@ -48,7 +48,12 @@ spreadsheet_id = '17Z7EGb2AFZiMRL2JC0abEdrCY1klXod2tWWTM98q3j8' # Temp Spreadshe
 CSV_FOLDER = '/Users/brianshift/Downloads/time'
 PDF_FOLDER = CSV_FOLDER
 SQUAD_NAME = 'Boom Bap'
-month = (Date.current - 1.month).beginning_of_month
+month =
+  if Date.current == Date.current.end_of_month
+    Date.current.beginning_of_month
+  else
+    Date.current.beginning_of_month - 1.month
+  end
 
 # Export
 csv_name = "#{CSV_FOLDER}/#{month.strftime('%Y-%m')}.csv"
@@ -66,7 +71,7 @@ csv_name = "#{CSV_FOLDER}/#{month.strftime('%Y-%m')}.csv"
 # end
 
 # Read CSV output by Timing App
-puts 'Reading csv'
+puts "Reading #{pastel.green(csv_name)}"
 csv = TimingCsv.new.parse(csv_name)
 hours_by_date = csv.map { |row| [row.date, round(row.hours)] }.to_h
 total_hours = csv.sum(&:hours)
