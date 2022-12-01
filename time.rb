@@ -48,7 +48,7 @@ puts ''
 # spreadsheet_id = '17Z7EGb2AFZiMRL2JC0abEdrCY1klXod2tWWTM98q3j8' # Temp Spreadsheet
 spreadsheet_id = '1IQjgumw91YtDu3qHTicrT2qRw4C_7opc6NaV7jb8aO0' # Real spreadsheet
 INVOICE_DRIVE_FOLDER = '1JaPYuZuDIZViHmBfvJLS6X8jS4mF-9ft'
-CSV_FOLDER = '/Users/brianshift/Downloads/time'
+CSV_FOLDER = '../time-data'
 PDF_FOLDER = CSV_FOLDER
 SQUAD_NAME = 'Boom Bap'
 month =
